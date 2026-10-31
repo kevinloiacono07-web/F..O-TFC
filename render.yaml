@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: forze-ordine-tfc
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -c "from app import init_db, create_admin; init_db(); create_admin()" && gunicorn app:app --workers 1 --threads 4
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false
+    disk:
+      name: forze-ordine-tfc-data
+      mountPath: /var/data
+      sizeGB: 1
